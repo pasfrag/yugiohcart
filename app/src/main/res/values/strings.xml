@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">YuGiOh Cart</string>
+
+    <string name="my_cart">My Cart</string>
+
+    <string name="card_search">Search cards</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
