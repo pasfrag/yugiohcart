@@ -6,10 +6,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -39,15 +41,18 @@ public class SearchCardActivity extends AppCompatActivity {
     private AutoCompleteTextView searchCardET;
     private ArrayAdapter<String> cardAdapter;
 	private String[] cardNames;
-	private ResponseListenerClass responseListenerClass;
+	private boolean first;
+	//private ResponseListenerClass responseListenerClass;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_card);
 
-		responseListenerClass = new ResponseListenerClass(this);
+		//responseListenerClass = new ResponseListenerClass(this);
 
 		cardNames = new String[9000];
+
+		first = true;
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(SearchCardActivity.this);
 
@@ -65,7 +70,34 @@ public class SearchCardActivity extends AppCompatActivity {
 		searchCardET.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+				InputMethodManager methodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				methodManager.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+
 				String cardNameSelected = searchCardET.getText().toString();
+
+				FragmentManager fragmentManager = getSupportFragmentManager();
+				android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+				CardDetailsFragment fragment = new CardDetailsFragment();
+
+				Bundle args = new Bundle();
+				args.putString("cardName", cardNameSelected);
+				fragment.setArguments(args);
+
+				if (first){
+					first = false;
+					transaction
+							.add(R.id.fragment_container, fragment)
+							.commit();
+
+				}else{
+					transaction
+							.replace(R.id.fragment_container, fragment)
+							.addToBackStack(null)
+							.commit();
+				}
+
 			}
 		});
 
@@ -121,9 +153,6 @@ public class SearchCardActivity extends AppCompatActivity {
 						editor.putString("cards_names", sb.toString());
 
 						editor.apply();
-
-						Toast toast = Toast.makeText(SearchCardActivity.this, "Response", Toast.LENGTH_SHORT);
-						toast.show();
 
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -184,7 +213,7 @@ public class SearchCardActivity extends AppCompatActivity {
 				fetchData();
 				adjustTheAdapter();
 			}
-				else {
+			else {
 				cardNames = cards.split(",");
 				adjustTheAdapter();
 			}

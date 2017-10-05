@@ -1,13 +1,92 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.example.pasca.yugiohcart.CardDetailsFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.pasca.yugiohcart.CardDetailsFragment"
+    android:isScrollContainer="true">
 
-    <!-- TODO: Update blank fragment layout -->
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title_TV"
+        android:textSize="30sp"/>
+
     <ImageView
         android:id="@+id/card_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_TV"/>
 
-</FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_text_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/card_image"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_type_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/card_text_TV"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/type_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/card_type_TV"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/family_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/type_TV"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/attack_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/family_TV"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/defence_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/attack_TV"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/level_TV"
+        android:textSize="20sp"
+        android:layout_below="@id/defence_TV"/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:layout_below="@+id/level_TV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/button"
+        android:layout_alignRight="@+id/button"
+        android:layout_below="@+id/button"
+        android:layout_marginTop="23dp"
+        android:text="Button"/>
+
+
+</RelativeLayout>
