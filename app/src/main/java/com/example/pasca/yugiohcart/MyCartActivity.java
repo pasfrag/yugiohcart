@@ -6,6 +6,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,10 +19,15 @@ public class MyCartActivity extends AppCompatActivity {
 	private RecyclerView recyclerView;
 	private CartAdapter cartAdapter;
 
+	private TextView priceTV, quantityTV;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_my_cart);
+
+		priceTV = (TextView) findViewById(R.id.cards_price);
+		quantityTV = (TextView) findViewById(R.id.cards_quantity);
 
 		handler = new MySQLiteHandler(getApplicationContext());
 
@@ -41,6 +47,7 @@ public class MyCartActivity extends AppCompatActivity {
 				cartAdapter.notifyItemRemoved(position);
 
 				handler.deleteCard(card);
+				setToolbar();
 			}
 		};
 
@@ -48,11 +55,26 @@ public class MyCartActivity extends AppCompatActivity {
 
 		myCart = handler.getAllCards();
 
+		setToolbar();
+
 		cartAdapter = new CartAdapter(myCart);
 		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.setAdapter(cartAdapter);
+
+	}
+
+	public void setToolbar(){
+
+		double totalPrice = 0.00;
+
+		for (Card card : myCart){
+			totalPrice += card.getPrice() * card.getQuantity();
+		}
+
+		quantityTV.setText("Number of cards: " + handler.getOrderCount());
+		priceTV.setText("Total price: " + totalPrice);
 
 	}
 

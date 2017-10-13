@@ -7,6 +7,32 @@
     tools:context="com.example.pasca.yugiohcart.MyCartActivity"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#333333">
+
+        <TextView
+            android:id="@+id/cards_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="20sp"
+            android:textColor="#ccc"
+            android:text="Number of cards: 20"/>
+
+        <TextView
+            android:id="@+id/cards_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:textSize="20sp"
+            android:textColor="#ccc"
+            android:text="Total price: 57.43"/>
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
