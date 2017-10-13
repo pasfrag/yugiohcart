@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -98,6 +99,10 @@ public class CardDetailsFragment extends Fragment {
 	}
 
 	private void populateData(){
+
+		String cardNameNew = cardName.replace(" ","_");
+		cardNameNew = cardNameNew.replace("-","_");
+
 		Response.Listener listener = new Response.Listener<String>(){
 
 			@Override
@@ -143,9 +148,6 @@ public class CardDetailsFragment extends Fragment {
 				}
 			}
 		};
-
-		String cardNameNew = cardName.replace(" ","_");
-		cardNameNew = cardNameNew.replace("-","_");
 
 		ImageRequest imageRequest = new ImageRequest(IMAGE_URL  + cardNameNew + ".jpg",
 				new Response.Listener<Bitmap>() {

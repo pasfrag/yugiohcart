@@ -10,11 +10,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -42,7 +50,14 @@ public class SearchCardActivity extends AppCompatActivity {
     private ArrayAdapter<String> cardAdapter;
 	private String[] cardNames;
 	private boolean first;
+	private PopupWindow popupWindow;
+	private RelativeLayout relativeLayout;
+	private MySQLiteHandler handler;
 	//private ResponseListenerClass responseListenerClass;
+
+	//PopupViewElements
+	private EditText quantityET, priceET;
+	private Spinner currencySP, conditionSP, raritySP;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +65,13 @@ public class SearchCardActivity extends AppCompatActivity {
 
 		//responseListenerClass = new ResponseListenerClass(this);
 
+		relativeLayout = (RelativeLayout) findViewById(R.id.activity_search_card);
+
 		cardNames = new String[9000];
 
 		first = true;
+
+		handler = new MySQLiteHandler(getApplicationContext());
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(SearchCardActivity.this);
 
@@ -236,6 +255,65 @@ public class SearchCardActivity extends AppCompatActivity {
 	private void makeAToast(String string){
 		Toast toast = Toast.makeText(this, string, Toast.LENGTH_SHORT);
 		toast.show();
+	}
+
+	public void addToCart(View view){
+		LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
+				.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+		View popupView = layoutInflater.inflate(R.layout.add_card_layout, null);
+
+		popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, 800);
+		popupWindow.setFocusable(true);
+		popupWindow.update();
+
+		TextView cardTitleTV = (TextView) popupView.findViewById(R.id.card_title_tv);
+		cardTitleTV.setText(searchCardET.getText().toString());
+		quantityET = (EditText) popupView.findViewById(R.id.quantity_tv);
+		priceET = (EditText) popupView.findViewById(R.id.price_tv);
+		currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
+		conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
+		raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
+
+		//popupWindow.setAnimationStyle();
+
+		popupWindow.showAtLocation(relativeLayout, Gravity.CENTER, 0, 0);
+
+	}
+
+	public void dismissPopup(View view){
+
+		popupWindow.dismiss();
+
+	}
+
+	public void addCard(View view){
+
+		String title = searchCardET.getText().toString();
+		int quantity = Integer.parseInt(quantityET.getText().toString());
+		Double price = Double.parseDouble(priceET.getText().toString());
+		String currency = currencySP.getSelectedItem().toString();
+		String condition = conditionSP.getSelectedItem().toString();
+		String rarity = raritySP.getSelectedItem().toString();
+
+		TextView typeTV = (TextView) findViewById(R.id.card_type_TV);
+		String type = typeTV.getText().toString();
+
+		if(type.equals("monster")) {
+
+			TextView monsterTypeTV = (TextView) findViewById(R.id.type_TV);
+			type = monsterTypeTV.getText().toString();
+
+		}
+
+		Card card = new Card(quantity, title, rarity, type, condition, currency, price);
+
+		if (!(rarity.equals("C") || rarity.equals("SR"))){
+			makeAToast("RARITY WHORE!!!");
+		}
+
+		handler.addACard(card);
+		popupWindow.dismiss();
 	}
 
 }

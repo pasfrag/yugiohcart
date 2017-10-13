@@ -6,4 +6,37 @@
     <string name="card_search">Search cards</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="conditions">
+        <item>Mint (M)</item>
+        <item>Near Mint (NM)</item>
+        <item>Lightly Played (LP)</item>
+        <item>Played (P)</item>
+        <item>Heavily Played (HP)</item>
+    </string-array>
+
+    <string-array name="rarities">
+        <item>C</item>
+        <item>R</item>
+        <item>SR</item>
+        <item>HFR</item>
+        <item>UR</item>
+        <item>UtR</item>
+        <item>ScR</item>
+        <item>UScr</item>
+        <item>ScUR</item>
+        <item>PScR</item>
+        <item>GR</item>
+        <item>PR</item>
+        <item>PC</item>
+        <item>SPR</item>
+        <item>UPR</item>
+        <item>GUR</item>
+    </string-array>
+
+    <string-array name="currency">
+        <item>Euro</item>
+        <item>Dollar</item>
+    </string-array>
+
 </resources>

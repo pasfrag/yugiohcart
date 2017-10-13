@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".SettingsActivity">
         </activity>
+        <activity android:name=".MyCartActivity">
+        </activity>
     </application>
 
 </manifest>

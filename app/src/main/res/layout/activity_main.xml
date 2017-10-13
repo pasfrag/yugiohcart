@@ -18,13 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/card_search"/>
+        android:text="@string/card_search"
+        android:onClick="onClickSearchCardButton"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:onClick="none"
+        android:onClick="onClickMyCartButton"
         android:text="@string/my_cart"/>
 
 

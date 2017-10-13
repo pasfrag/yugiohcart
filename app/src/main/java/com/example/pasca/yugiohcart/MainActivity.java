@@ -15,19 +15,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        searchCardButton = (Button) findViewById(R.id.search_card_button);
-        searchCardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickSearchCardButton(v);
-            }
-        });
     }
 
 
     //This method creates the activity that shows search card area
-    void onClickSearchCardButton(View v){
+    public void onClickSearchCardButton(View view){
 
         Context context = this;
 
@@ -36,5 +28,19 @@ public class MainActivity extends AppCompatActivity {
         Intent startSearchCardIntent = new Intent(context, destinyClass);
 
         startActivity(startSearchCardIntent);
+
     }
+
+    public void onClickMyCartButton(View view){
+
+        Context context = this;
+
+        Class destinyClass = MyCartActivity.class;
+
+        Intent startSearchCardIntent = new Intent(context, destinyClass);
+
+        startActivity(startSearchCardIntent);
+
+    }
+
 }
