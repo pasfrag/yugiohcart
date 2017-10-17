@@ -5,11 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class MySQLiteHandler extends SQLiteOpenHelper {
+
+	private Context context;
 
 	// Database Version
 	private static final int DATABASE_VERSION = 1;
@@ -17,10 +18,10 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	// Database Name
 	private static final String DATABASE_NAME = "yugioh.db";
 
-	// Computer Table Name
+	// Cart Table Name
 	private static final String TABLE_CART = "cart";
 
-	// Computer Table Columns
+	// Cart Table Columns
 	private static final String COLUMN_ID = "id";
 	private static final String COLUMN_CARD_TITLE = "title";
 	private static final String COLUMN_CARD_QUANTITY = "quantity";
@@ -31,24 +32,34 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	private static final String COLUMN_CARD_CURRENCY = "currency";
 
 
-	private String CREATE_COMPUTER_TABLE = "CREATE TABLE " + TABLE_CART + " (" + COLUMN_ID +
+	private String CREATE_CART_TABLE = "CREATE TABLE " + TABLE_CART + " (" + COLUMN_ID +
 			" INTEGER PRIMARY KEY, " + COLUMN_CARD_TITLE + " TEXT, " + COLUMN_CARD_QUANTITY +
 			" INTEGER, " + COLUMN_CARD_TYPE + " TEXT, " + COLUMN_CARD_CONDITION +
 			" TEXT, "  + COLUMN_CARD_RARITY + " TEXT, "  + COLUMN_CARD_PRICE + " REAL, "  +
 			COLUMN_CARD_CURRENCY + " TEXT" +")";
+
+	//Cards Table Name
+	static final String TABLE_CARDS = "cards";
+
+	static final String COLUMN_TITLE = "title";
+
+	private String CREATE_CARDS = "CREATE TABLE " + TABLE_CARDS + " (" + COLUMN_CARD_TITLE +
+			" TEXT)";
 
 
 	public MySQLiteHandler(Context context) {
 
 
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		this.context = context;
 
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 
-		db.execSQL(CREATE_COMPUTER_TABLE);
+		db.execSQL(CREATE_CART_TABLE);
+		db.execSQL(CREATE_CARDS);
 
 	}
 
@@ -56,6 +67,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CART);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CARDS);
 
 		onCreate(db);
 
@@ -202,6 +214,55 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 			do {
 				count += cursor.getInt(2);
+			}while(cursor.moveToNext());
+
+		}
+
+		cursor.close();
+		database.close();
+
+		return  count;
+
+	}
+
+	public void deleteAllCards(){
+
+		SQLiteDatabase database = this.getWritableDatabase();
+		database.delete(TABLE_CARDS, null, null);
+		database.close();
+
+	}
+
+	public List<String> getAllCardNames(){
+
+		List<String> cardNames = new ArrayList<>();
+		SQLiteDatabase database = this.getReadableDatabase();
+		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CARDS, null);
+
+		if(cursor.moveToFirst()){
+			do {
+				cardNames.add(cursor.getString(0));
+			}while (cursor.moveToNext());
+		}
+
+		cursor.close();
+		database.close();
+
+		return cardNames;
+
+	}
+
+	public int getCardCount(){
+
+		SQLiteDatabase database = this.getReadableDatabase();
+		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CARDS, null);
+
+		int count = 0;
+
+		if(cursor.moveToFirst()){
+
+			do {
+				count += cursor.getInt(0);
 			}while(cursor.moveToNext());
 
 		}

@@ -12,16 +12,28 @@ import java.util.List;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> {
 
 	private List<Card> myCart;
+	private CustomItemClickListener listener;
 
-	public CartAdapter(List<Card> myCart) {
+	public CartAdapter(List<Card> myCart, CustomItemClickListener listener) {
 		this.myCart = myCart;
+		this.listener = listener;
 	}
 
 	@Override
 	public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View itemView = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.cart_list_layout, parent, false);
-		return new MyViewHolder(itemView);
+		final MyViewHolder viewHolder = new MyViewHolder(itemView);
+
+		itemView.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				listener.onItemClick(v, viewHolder.getAdapterPosition());
+			}
+		});
+
+		return viewHolder;
 	}
 
 	@Override
@@ -37,8 +49,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
 		holder.quantityTV.setText(Integer.toString(quantity) + " X");
 		holder.conditionTV.setText("Condition: " + condition);
 		holder.rarityTV.setText("Rarity: " + card.getRarity());
-		holder.singlePriceTV.setText(Double.toString(price) + "€");
-		holder.multiplePriceTV.setText(Double.toString(multiplePrice) + "€");
+		holder.singlePriceTV.setText(String.format("%.2f", price) + "€");
+		holder.multiplePriceTV.setText(String.format("%.2f", multiplePrice) + "€");
 
 	}
 
