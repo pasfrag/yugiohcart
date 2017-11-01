@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private MySQLiteHandler handler;
 	private ProgressBar progressBar;
-	private Button searchBT, cartBT;
+	private Button searchBT, cartBT, retryBT;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 		progressBar = (ProgressBar) findViewById(R.id.pb);
 		searchBT = (Button) findViewById(R.id.search_card_button);
 		cartBT = (Button) findViewById(R.id.my_cart_button);
+		retryBT = (Button) findViewById(R.id.retry_main_btn);
 
 		handler = new MySQLiteHandler(this);
 
@@ -47,12 +48,14 @@ public class MainActivity extends AppCompatActivity {
 			new PopulateDatabaseTask().execute();
 		}else if (handler.getCardCount() == 0 && !isOnline()){
 			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
-			//InternetReceiver internetReceiver = new InternetReceiver();
+			progressBar.setVisibility(View.GONE);
+			retryBT.setVisibility(View.VISIBLE);
 
 		}else if (handler.getCardCount() != 0){
 			progressBar.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
+			retryBT.setVisibility(View.GONE);
 		}
     }
 
@@ -87,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
 				(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		return netInfo != null && netInfo.isConnectedOrConnecting();
+	}
+
+	public void retryPopulatingDB(View view){
+		if (isOnline()){
+			retryBT.setVisibility(View.GONE);
+			progressBar.setVisibility(View.VISIBLE);
+			new PopulateDatabaseTask().execute();
+		}else{
+			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private class PopulateDatabaseTask extends AsyncTask<Void,Void,Void>{
@@ -174,24 +187,6 @@ public class MainActivity extends AppCompatActivity {
 			progressBar.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
-		}
-	}
-
-	private class InternetReceiver extends BroadcastReceiver{
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getExtras()!=null){
-				final ConnectivityManager connectivityManager =
-						(ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-				final NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-				if (info.isConnected()){
-
-					Toast.makeText(getApplicationContext(), "You are online now", Toast.LENGTH_LONG).show();
-					this.abortBroadcast();
-
-				}
-			}
 		}
 	}
 

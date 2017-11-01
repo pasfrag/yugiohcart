@@ -21,21 +21,34 @@
 
     <Button
         android:id="@+id/search_card_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:text="@string/card_search"
         android:onClick="onClickSearchCardButton"
-        android:visibility="gone"/>
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:visibility="gone"
+        android:textAllCaps="false"/>
 
     <Button
         android:id="@+id/my_cart_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:onClick="onClickMyCartButton"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:text="@string/my_cart"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:textAllCaps="false"/>
+
+    <Button
+
+        android:id="@+id/retry_main_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:text="Retry"
+        android:textAllCaps="false"
+        android:onClick="retryPopulatingDB"/>
 
 
 

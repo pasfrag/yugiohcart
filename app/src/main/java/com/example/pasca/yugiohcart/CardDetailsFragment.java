@@ -35,9 +35,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 
@@ -112,8 +114,14 @@ public class CardDetailsFragment extends Fragment {
 					if (JSONResponse.getString("status").contentEquals("success")) {
 						JSONObject data = JSONResponse.getJSONObject("data");
 
+						String textToChange = data.getString("text");
+						String text = textToChange.replaceAll("\\s+", " ");
+						text = text.replaceAll("â\\u0097\\u008F", "\n \u2022");
+
+						Log.e("Change text", textToChange);
+
 						titleTV.setText(data.getString("name"));
-						textTV.setText(data.getString("text"));
+						textTV.setText(text);
 						typeTV.setText(data.getString("type"));
 						cardTypeTV.setText(data.getString("card_type"));
 						familyTV.setText(data.getString("family"));
@@ -164,7 +172,6 @@ public class CardDetailsFragment extends Fragment {
 				}
 		);
 
-		Log.e("DATAURL", DATA_URL + cardName);
 		CardDataRequest dataRequest = new CardDataRequest(DATA_URL + cardName, listener, errorListener);
 		RequestQueue queue = Volley.newRequestQueue(this.getContext());
 
