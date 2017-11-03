@@ -1,5 +1,7 @@
 package com.example.pasca.yugiohcart;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -118,7 +120,7 @@ public class MyCartActivity extends AppCompatActivity {
 				popupWindow.showAtLocation(recyclerView, Gravity.CENTER, 0, 0);
 
 			}
-		});
+		}, getApplicationContext());
 		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -129,13 +131,40 @@ public class MyCartActivity extends AppCompatActivity {
 	public void setToolbar(){
 
 		double totalPrice = 0.00;
+		double totalPriceE = 0.00;
+		double totalPriceD = 0.00;
+
+		String curKey = getString(R.string.pref_currency_key);
+		String curValue = getString(R.string.pref_currency_def_value);
+		String usdeurKey = getString(R.string.saved_usdeur);
+
+		SharedPreferences sharedPreferences = getSharedPreferences("ab", MODE_PRIVATE);
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+		String currSymbol = preferences.getString(curKey, curValue);
+		double currency = Double.parseDouble(sharedPreferences.getString(usdeurKey, "1"));
 
 		for (Card card : myCart){
-			totalPrice += card.getPrice() * card.getQuantity();
+			if (card.getCurrency().equals("Euro")) {
+				totalPriceE += card.getPrice() * card.getQuantity();
+			}else totalPriceD += card.getPrice() * card.getQuantity();
 		}
 
-		quantityTV.setText("Number of cards: " + handler.getOrderCount());
-		priceTV.setText("Total price: " + String.format("%.2f",totalPrice));
+		if (currSymbol.equals("$")){
+			totalPriceE = totalPriceE / currency;
+
+			totalPriceE = round(totalPriceE, 2);
+
+		}else {
+			totalPriceD = totalPriceD * currency;
+
+			totalPriceD = round(totalPriceD, 2);
+		}
+
+		totalPrice = totalPriceE + totalPriceD;
+
+		quantityTV.setText("Total cards: " + handler.getOrderCount());
+		priceTV.setText("Price: " + String.format("%.2f",totalPrice) + currSymbol);
 
 	}
 
@@ -169,5 +198,13 @@ public class MyCartActivity extends AppCompatActivity {
 		popupWindow.dismiss();
 	}
 
+	public static double round(double value, int places) {
+		if (places < 0) throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (double) tmp / factor;
+	}
 
 }

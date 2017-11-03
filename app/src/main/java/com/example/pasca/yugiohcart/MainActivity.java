@@ -1,20 +1,34 @@
 package com.example.pasca.yugiohcart;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
 		if (handler.getCardCount() == 0 && isOnline()){
 			new PopulateDatabaseTask().execute();
+			getCurrency();
 		}else if (handler.getCardCount() == 0 && !isOnline()){
 			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
 			progressBar.setVisibility(View.GONE);
@@ -59,8 +74,38 @@ public class MainActivity extends AppCompatActivity {
 		}
     }
 
+    public boolean onCreateOptionsMenu(Menu menu){
 
-    //This method creates the activity that shows search card area
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		int id = item.getItemId();
+
+		if (id == R.id.action_download){
+
+			retryPopulatingDB(null);
+
+		}else if (id == R.id.action_settings){
+
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+			return true;
+
+		}else if (id == R.id.action_currency){
+			if (isOnline()){
+				getCurrency();
+			}else {
+				Toast.makeText(this, "You must be online to get latest currency", Toast.LENGTH_LONG).show();
+			}
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	//This method creates the activity that shows search card area
     public void onClickSearchCardButton(View view){
 
         Context context = this;
@@ -94,9 +139,18 @@ public class MainActivity extends AppCompatActivity {
 
 	public void retryPopulatingDB(View view){
 		if (isOnline()){
+
+			handler.deleteAllCards();
+			cartBT.setVisibility(View.GONE);
+			searchBT.setVisibility(View.GONE);
 			retryBT.setVisibility(View.GONE);
 			progressBar.setVisibility(View.VISIBLE);
 			new PopulateDatabaseTask().execute();
+
+			if (view!=null){
+				getCurrency();
+			}
+
 		}else{
 			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
 		}
@@ -188,6 +242,55 @@ public class MainActivity extends AppCompatActivity {
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
 		}
+	}
+
+	public void getCurrency(){
+
+		String url = "http://www.apilayer.net/api/live?access_key=5ef2d99463c96f522c3830ba0af61443&format=1";
+
+		Response.Listener listener = new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {
+
+				try {
+					JSONObject json = new JSONObject(response);
+					if (json.getBoolean("success")){
+						JSONObject currencies = json.getJSONObject("quotes");
+						double usdeur = currencies.getDouble("USDEUR");
+
+						SharedPreferences preferences = getSharedPreferences("ab" ,Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = preferences.edit();
+
+						editor.putString(getString(R.string.saved_usdeur), String.valueOf(usdeur));
+						editor.apply();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+			}
+		};
+
+		Response.ErrorListener errorListener = new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = preferences.edit();
+
+				editor.putString(getString(R.string.saved_usdeur), "1");
+				editor.apply();
+			}
+		};
+
+		StringRequest request = new StringRequest(Request.Method.GET, url, listener, errorListener);
+		RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+		int socketTimeout = 30000;
+		RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+		request.setRetryPolicy(policy);
+
+		queue.add(request);
+
 	}
 
 }

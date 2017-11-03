@@ -13,7 +13,10 @@ public class SettingsActivity extends PreferenceActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_settings);
+		//setContentView(R.layout.activity_settings);
+		addPreferencesFromResource(R.xml.pref_general);
+
+		bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_currency_key)));
 	}
 
 	private void bindPreferenceSummaryToValue(Preference preference) {
