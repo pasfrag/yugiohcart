@@ -9,15 +9,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -46,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 	private MySQLiteHandler handler;
 	private ProgressBar progressBar;
 	private Button searchBT, cartBT, retryBT;
+	private TextView progressTV, cardDownloadedTV;
+	private String cardNow;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 		searchBT = (Button) findViewById(R.id.search_card_button);
 		cartBT = (Button) findViewById(R.id.my_cart_button);
 		retryBT = (Button) findViewById(R.id.retry_main_btn);
+		progressTV = (TextView) findViewById(R.id.progress_percentage);
+		cardDownloadedTV = (TextView) findViewById(R.id.progress_card);
 
 		handler = new MySQLiteHandler(this);
 
@@ -64,10 +67,14 @@ public class MainActivity extends AppCompatActivity {
 		}else if (handler.getCardCount() == 0 && !isOnline()){
 			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
 			progressBar.setVisibility(View.GONE);
+			progressTV.setVisibility(View.GONE);
+			cardDownloadedTV.setVisibility(View.GONE);
 			retryBT.setVisibility(View.VISIBLE);
 
 		}else if (handler.getCardCount() != 0){
+			progressTV.setVisibility(View.GONE);
 			progressBar.setVisibility(View.GONE);
+			cardDownloadedTV.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
 			retryBT.setVisibility(View.GONE);
@@ -145,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
 			searchBT.setVisibility(View.GONE);
 			retryBT.setVisibility(View.GONE);
 			progressBar.setVisibility(View.VISIBLE);
+			progressTV.setVisibility(View.VISIBLE);
+			cardDownloadedTV.setVisibility(View.VISIBLE);
 			new PopulateDatabaseTask().execute();
 
 			if (view!=null){
@@ -156,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private class PopulateDatabaseTask extends AsyncTask<Void,Void,Void>{
+	private class PopulateDatabaseTask extends AsyncTask<Void,Integer,Void>{
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -201,11 +210,19 @@ public class MainActivity extends AppCompatActivity {
 				SQLiteDatabase database = handler.getWritableDatabase();
 				ContentValues values = new ContentValues();
 
+				int progress = 0;
+
 				for (String card : cardNames) {
+
+					cardNow = card;
 
 					values.put(handler.COLUMN_TITLE, card);
 
 					database.insert(handler.TABLE_CARDS, null, values);
+
+					progress++;
+
+					publishProgress(progress);
 				}
 
 				database.close();
@@ -239,8 +256,21 @@ public class MainActivity extends AppCompatActivity {
 
 		protected void onPostExecute(Void v){
 			progressBar.setVisibility(View.GONE);
+			progressTV.setVisibility(View.GONE);
+			cardDownloadedTV.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+			super.onProgressUpdate(progress[0]);
+
+			progressBar.setProgress(progress[0]);
+
+			int percentage = (progress[0]/100);
+			progressTV.setText( String.valueOf(percentage) + "%");
+			cardDownloadedTV.setText("Downloading card " + cardNow);
 		}
 	}
 
