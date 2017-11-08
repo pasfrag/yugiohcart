@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,14 +122,24 @@ public class CardDetailsFragment extends Fragment {
 
 						Log.e("Change text", textToChange);
 
-						titleTV.setText(data.getString("name"));
+						SpannableString content = new SpannableString(data.getString("name"));
+						content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+						titleTV.setText(content);
 						textTV.setText(text);
-						typeTV.setText(data.getString("type"));
 						cardTypeTV.setText(data.getString("card_type"));
-						familyTV.setText(data.getString("family"));
-						atkTV.setText(data.getString("atk"));
-						defTV.setText(data.getString("def"));
-						levelTV.setText(data.getString("level"));
+						if (data.getString("card_type").equals("monster")) {
+							typeTV.setText(data.getString("type"));
+							familyTV.setText(data.getString("family"));
+							atkTV.setText(data.getString("atk"));
+							defTV.setText(data.getString("def"));
+							levelTV.setText(data.getString("level"));
+						}else{
+							typeTV.setVisibility(View.GONE);
+							familyTV.setVisibility(View.GONE);
+							atkTV.setVisibility(View.GONE);
+							defTV.setVisibility(View.GONE);
+							levelTV.setVisibility(View.GONE);
+						}
 
 					}else {
 						Log.e("Volley.Response","No data to retrieve");

@@ -25,7 +25,7 @@ import java.util.List;
 public class SearchCardActivity extends AppCompatActivity {
 
     private AutoCompleteTextView searchCardET;
-    private ArrayAdapter<String> cardAdapter;
+    private MyArrayAdapter<String> cardAdapter;
 	private boolean first;
 	private PopupWindow popupWindow;
 	private RelativeLayout relativeLayout;
@@ -50,7 +50,7 @@ public class SearchCardActivity extends AppCompatActivity {
 
         searchCardET = (AutoCompleteTextView) findViewById(R.id.search_card);
 
-		cardAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, cardNameList);
+		cardAdapter = new MyArrayAdapter<String>(this, android.R.layout.simple_list_item_1, cardNameList);
 		searchCardET.setAdapter(cardAdapter);
 		cardAdapter.notifyDataSetChanged();
 
