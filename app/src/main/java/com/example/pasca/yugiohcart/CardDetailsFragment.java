@@ -153,6 +153,16 @@ public class CardDetailsFragment extends Fragment {
 		Response.ErrorListener errorListener = new Response.ErrorListener() {
 			@Override
 			public void onErrorResponse(VolleyError error) {
+
+				titleTV.setVisibility(View.GONE);
+				textTV.setText("There is no internet connection. You can \'t see any data.");
+				cardTypeTV.setVisibility(View.GONE);
+				typeTV.setVisibility(View.GONE);
+				familyTV.setVisibility(View.GONE);
+				atkTV.setVisibility(View.GONE);
+				defTV.setVisibility(View.GONE);
+				levelTV.setVisibility(View.GONE);
+
 				if (error instanceof NetworkError) {
 					Log.e("Volley Error", "Network error");
 				} else if (error instanceof ServerError) {
