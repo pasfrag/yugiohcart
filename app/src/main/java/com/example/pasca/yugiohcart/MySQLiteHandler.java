@@ -13,13 +13,13 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	private Context context;
 
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Database Name
 	private static final String DATABASE_NAME = "yugioh.db";
 
 	// Cart Table Name
-	private static final String TABLE_CART = "cart";
+	public static final String TABLE_CART = "cart";
 
 	// Cart Table Columns
 	private static final String COLUMN_ID = "id";
@@ -46,6 +46,14 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	private String CREATE_CARDS = "CREATE TABLE " + TABLE_CARDS + " (" + COLUMN_CARD_TITLE +
 			" TEXT)";
 
+	public final String TABLE_COLLECTION = "collection";
+
+	private String CREATE_COLLECTION_TABLE = "CREATE TABLE " + TABLE_COLLECTION + " (" + COLUMN_ID +
+			" INTEGER PRIMARY KEY, " + COLUMN_CARD_TITLE + " TEXT, " + COLUMN_CARD_QUANTITY +
+			" INTEGER, " + COLUMN_CARD_TYPE + " TEXT, " + COLUMN_CARD_CONDITION +
+			" TEXT, "  + COLUMN_CARD_RARITY + " TEXT, "  + COLUMN_CARD_PRICE + " REAL, "  +
+			COLUMN_CARD_CURRENCY + " TEXT" +")";
+
 
 	public MySQLiteHandler(Context context) {
 
@@ -60,6 +68,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 		db.execSQL(CREATE_CART_TABLE);
 		db.execSQL(CREATE_CARDS);
+		db.execSQL(CREATE_COLLECTION_TABLE);
 
 	}
 
@@ -68,12 +77,13 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CART);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CARDS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTION);
 
 		onCreate(db);
 
 	}
 
-	public void addACard(Card card){
+	public void addACard(Card card , String tableName){
 
 		SQLiteDatabase database = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -86,16 +96,16 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		values.put(COLUMN_CARD_PRICE, card.getPrice());
 		values.put(COLUMN_CARD_CURRENCY, card.getCurrency());
 
-		database.insert(TABLE_CART, null, values);
+		database.insert(tableName, null, values);
 
 		database.close();
 
 	}
 
-	public Card getCard(int id){
+	public Card getCard(int id , String tableName){
 
 		SQLiteDatabase database = this.getReadableDatabase();
-		Cursor cursor = database.query(TABLE_CART, new String[]{COLUMN_ID, COLUMN_CARD_TITLE,
+		Cursor cursor = database.query(tableName, new String[]{COLUMN_ID, COLUMN_CARD_TITLE,
 				COLUMN_CARD_QUANTITY, COLUMN_CARD_TYPE, COLUMN_CARD_CONDITION, COLUMN_CARD_RARITY,
 				COLUMN_CARD_PRICE, COLUMN_CARD_CURRENCY }, COLUMN_ID + "=?",
 				new String[]{String.valueOf(id)},null, null, null);
@@ -124,11 +134,11 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		return card;
 	}
 
-	public List<Card> getAllCards(){
+	public List<Card> getAllCards(String tableName){
 		List<Card> cardList = new ArrayList<>();
 
 		SQLiteDatabase database = this.getReadableDatabase();
-		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CART,null);
+		Cursor cursor = database.rawQuery("SELECT * FROM " + tableName,null);
 
 		if (cursor.moveToFirst()){
 			do {
@@ -155,7 +165,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 	}
 
-	public int updateCard(Card card){
+	public int updateCard(Card card, String tableName){
 		SQLiteDatabase database = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 
@@ -167,32 +177,32 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		values.put(COLUMN_CARD_PRICE, card.getPrice());
 		values.put(COLUMN_CARD_CURRENCY, card.getCurrency());
 
-		int retValue = database.update(TABLE_CART, values, COLUMN_ID + " = ? ", new String[]{String.valueOf(card.getId())});
+		int retValue = database.update(tableName, values, COLUMN_ID + " = ? ", new String[]{String.valueOf(card.getId())});
 		database.close();
 		return retValue;
 	}
 
-	public void deleteCard(Card card){
+	public void deleteCard(Card card, String tableName){
 
 		SQLiteDatabase database = this.getWritableDatabase();
 
-		database.delete(TABLE_CART, COLUMN_ID + " = ? ", new String[]{String.valueOf(card.getId())});
+		database.delete(tableName, COLUMN_ID + " = ? ", new String[]{String.valueOf(card.getId())});
 
 		database.close();
 
 	}
 
-	public void deleteAll(){
+	public void deleteAll(String tableName){
 
 		SQLiteDatabase database = this.getWritableDatabase();
-		database.delete(TABLE_CART, null, null);
+		database.delete(tableName, null, null);
 		database.close();
 	}
 
-	public int getTitleCount(){
+	public int getTitleCount(String tableName){
 
 		SQLiteDatabase database = this.getReadableDatabase();
-		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CART, null);
+		Cursor cursor = database.rawQuery("SELECT * FROM " + tableName, null);
 
 		int count = cursor.getCount();
 
@@ -203,10 +213,10 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 	}
 
-	public int getOrderCount(){
+	public int getOrderCount(String tableName){
 
 		SQLiteDatabase database = this.getReadableDatabase();
-		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CART, null);
+		Cursor cursor = database.rawQuery("SELECT * FROM " + tableName, null);
 
 		int count = 0;
 
@@ -222,6 +232,17 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		database.close();
 
 		return  count;
+
+	}
+
+	public void addCardName(String card){
+
+		SQLiteDatabase database = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put(COLUMN_TITLE, card);
+		database.insert(TABLE_CARDS, null, values);
+		database.close();
 
 	}
 
@@ -273,5 +294,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		return  count;
 
 	}
+
+
 
 }

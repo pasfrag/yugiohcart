@@ -97,6 +97,13 @@ public class CardDetailsFragment extends Fragment {
 		levelTV = (TextView) rootView.findViewById(R.id.level_TV);
 		cardImage = (ImageView) rootView.findViewById(R.id.card_image);
 
+		cardImage.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				return true;
+			}
+		});
+
 		populateData();
 
 		return rootView;

@@ -6,11 +6,6 @@
     tools:context="com.example.pasca.yugiohcart.CardDetailsFragment"
     android:isScrollContainer="true">
 
-
-    <!--
-        android:layout_width="192dp"
-        android:layout_height="281dp"-->
-
     <ImageView
         android:id="@+id/card_image"
         android:layout_height="400dp"

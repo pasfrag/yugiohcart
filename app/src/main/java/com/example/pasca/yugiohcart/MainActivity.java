@@ -1,10 +1,8 @@
 package com.example.pasca.yugiohcart;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private MySQLiteHandler handler;
 	private ProgressBar progressBar;
-	private Button searchBT, cartBT, retryBT;
+	private Button searchBT, cartBT, retryBT, collectionBT;
 	private TextView progressTV, cardDownloadedTV;
 	private String cardNow;
 
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 		retryBT = (Button) findViewById(R.id.retry_main_btn);
 		progressTV = (TextView) findViewById(R.id.progress_percentage);
 		cardDownloadedTV = (TextView) findViewById(R.id.progress_card);
+		collectionBT = (Button) findViewById(R.id.my_collection_button);
 
 		handler = new MySQLiteHandler(this);
 
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 			cardDownloadedTV.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
+			collectionBT.setVisibility(View.VISIBLE);
 			retryBT.setVisibility(View.GONE);
 		}
     }
@@ -137,6 +137,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onClickMyCollectionButton(View view){
+
+		Context context = this;
+
+		Class destinyClass = MyCollectionActivity.class;
+
+		Intent startSearchCardIntent = new Intent(context, destinyClass);
+
+		startActivity(startSearchCardIntent);
+
+	}
+
 	public boolean isOnline() {
 		ConnectivityManager cm =
 				(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -149,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
 			handler.deleteAllCards();
 			cartBT.setVisibility(View.GONE);
+			collectionBT.setVisibility(View.GONE);
 			searchBT.setVisibility(View.GONE);
 			retryBT.setVisibility(View.GONE);
 			progressBar.setVisibility(View.VISIBLE);
@@ -196,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 				ArrayList<String> cardNames;
 
 				JSONObject JSONResponse = new JSONObject(response);
-				JSONArray cardsJSON = JSONResponse.getJSONArray("items");
+				final JSONArray cardsJSON = JSONResponse.getJSONArray("items");
 
 				cardNames = new ArrayList<>(cardsJSON.length());
 
@@ -207,8 +220,12 @@ public class MainActivity extends AppCompatActivity {
 
 				}
 
-				SQLiteDatabase database = handler.getWritableDatabase();
-				ContentValues values = new ContentValues();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						progressBar.setMax(cardsJSON.length());
+					}
+				});
 
 				int progress = 0;
 
@@ -216,16 +233,13 @@ public class MainActivity extends AppCompatActivity {
 
 					cardNow = card;
 
-					values.put(handler.COLUMN_TITLE, card);
-
-					database.insert(handler.TABLE_CARDS, null, values);
+					handler.addCardName(card);
 
 					progress++;
 
-					publishProgress(progress);
+					publishProgress(progress, cardsJSON.length());
 				}
 
-				database.close();
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -260,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
 			cardDownloadedTV.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
+			collectionBT.setVisibility(View.VISIBLE);
 		}
 
 		@Override
@@ -268,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
 			progressBar.setProgress(progress[0]);
 
-			int percentage = (progress[0]/100);
+			int percentage = (progress[0]*100/progress[1]);
 			progressTV.setText( String.valueOf(percentage) + "%");
 			cardDownloadedTV.setText("Downloading card " + cardNow);
 		}

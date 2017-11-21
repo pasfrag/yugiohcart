@@ -80,8 +80,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
 		holder.quantityTV.setText(Integer.toString(quantity) + " X");
 		holder.conditionTV.setText("Condition: " + condition);
 		holder.rarityTV.setText("Rarity: " + card.getRarity());
-		holder.singlePriceTV.setText(String.format("%.2f", price) + currSymbol);
-		holder.multiplePriceTV.setText(String.format("%.2f", multiplePrice) + currSymbol);
+		if (price > 0.0) {
+			holder.singlePriceTV.setText(String.format("%.2f", price) + currSymbol);
+			holder.multiplePriceTV.setText(String.format("%.2f", multiplePrice) + currSymbol);
+		}else if (price == 0.0){
+			holder.singlePriceTV.setText("N/A");
+			holder.multiplePriceTV.setText("N/A");
+		}
 
 	}
 

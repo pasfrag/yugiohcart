@@ -134,7 +134,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="addCard"
-            android:text="Add Card"/>
+            android:text="Add to Card"/>
+
+        <Button
+            android:id="@+id/collection_add_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="addCard"
+            android:text="Add to Collection"/>
 
         <Button
             android:id="@+id/dismiss_btn"

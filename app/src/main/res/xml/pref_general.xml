@@ -10,4 +10,16 @@
         android:entries="@array/currency"
         android:entryValues="@array/currency_values"/>
 
+    <PreferenceCategory
+        android:summary="..."
+        android:title="Collection settings">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_prices"
+            android:summary="Show/hide card prices"
+            android:title="Show prices"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

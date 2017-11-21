@@ -1,8 +1,6 @@
 package com.example.pasca.yugiohcart;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -35,6 +33,7 @@ public class SearchCardActivity extends AppCompatActivity {
 	//PopupViewElements
 	private EditText quantityET, priceET;
 	private Spinner currencySP, conditionSP, raritySP;
+	private Button cartBT, collectionBT;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,14 +89,6 @@ public class SearchCardActivity extends AppCompatActivity {
 
     }
 
-	//A method to check network connection
-	public boolean isOnline() {
-		ConnectivityManager cm =
-			(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnectedOrConnecting();
-	}
-
 	private void makeAToast(String string){
 		Toast toast = Toast.makeText(this, string, Toast.LENGTH_SHORT);
 		toast.show();
@@ -120,6 +111,8 @@ public class SearchCardActivity extends AppCompatActivity {
 		currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
 		conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
 		raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
+		cartBT = (Button) popupView.findViewById(R.id.add_btn);
+		collectionBT = (Button) popupView.findViewById(R.id.collection_add_btn);
 
 		//popupWindow.setAnimationStyle();
 
@@ -134,6 +127,9 @@ public class SearchCardActivity extends AppCompatActivity {
 	}
 
 	public void addCard(View view){
+
+		String tableName = handler.TABLE_CART;
+		String added = "cart!";
 
 		String title = searchCardET.getText().toString();
 		int quantity = Integer.parseInt(quantityET.getText().toString());
@@ -152,13 +148,20 @@ public class SearchCardActivity extends AppCompatActivity {
 
 		}
 
+		if (view == collectionBT){
+			price = 0.0;
+			tableName = handler.TABLE_COLLECTION;
+			added = "collection!";
+		}
+
 		Card card = new Card(quantity, title, rarity, type, condition, currency, price);
 
-		if (!(rarity.equals("C") || rarity.equals("SR"))){
+		if (!(rarity.equals("C") || rarity.equals("SR") || rarity.equals("R"))){
 			makeAToast("RARITY WHORE!!!");
 		}
 
-		handler.addACard(card);
+		makeAToast("Card added to your " + added);
+		handler.addACard(card, tableName);
 		popupWindow.dismiss();
 	}
 

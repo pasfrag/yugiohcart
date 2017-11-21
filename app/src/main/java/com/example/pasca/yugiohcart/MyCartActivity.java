@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,14 +62,15 @@ public class MyCartActivity extends AppCompatActivity {
 				myCart.remove(position);
 				cartAdapter.notifyItemRemoved(position);
 
-				handler.deleteCard(card);
+				handler.deleteCard(card, handler.TABLE_CART);
 				setToolbar();
+				Toast.makeText(getApplicationContext(), "Card deleted", Toast.LENGTH_LONG).show();
 			}
 		};
 
 		new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
 
-		myCart = handler.getAllCards();
+		myCart = handler.getAllCards(handler.TABLE_CART);
 
 		setToolbar();
 
@@ -116,6 +116,8 @@ public class MyCartActivity extends AppCompatActivity {
 				updateBtn.setText("Update");
 
 				RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cart_RV);
+
+				popupView.findViewById(R.id.collection_add_btn).setVisibility(View.GONE);
 
 				popupWindow.showAtLocation(recyclerView, Gravity.CENTER, 0, 0);
 
@@ -163,7 +165,7 @@ public class MyCartActivity extends AppCompatActivity {
 
 		totalPrice = totalPriceE + totalPriceD;
 
-		quantityTV.setText("Total cards: " + handler.getOrderCount());
+		quantityTV.setText("Total cards: " + handler.getOrderCount(handler.TABLE_CART));
 		priceTV.setText("Price: " + String.format("%.2f",totalPrice) + currSymbol);
 
 	}
@@ -189,7 +191,8 @@ public class MyCartActivity extends AppCompatActivity {
 		myCart.add(position, card);
 		cartAdapter.notifyItemChanged(position);
 
-		handler.updateCard(card);
+		handler.updateCard(card, handler.TABLE_CART);
+		setToolbar();
 
 		popupWindow.dismiss();
 	}

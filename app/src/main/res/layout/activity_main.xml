@@ -23,7 +23,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             style="@android:style/Widget.ProgressBar.Horizontal"
-            android:max="10000"
             android:progress="0"
             android:layout_weight="0.9"
             android:layout_marginRight="5dp"/>
@@ -60,6 +59,16 @@
         android:onClick="onClickMyCartButton"
         android:layout_gravity="center_horizontal|center_vertical"
         android:text="@string/my_cart"
+        android:visibility="gone"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/my_collection_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickMyCollectionButton"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:text="@string/my_collection"
         android:visibility="gone"
         android:textAllCaps="false"/>
 
