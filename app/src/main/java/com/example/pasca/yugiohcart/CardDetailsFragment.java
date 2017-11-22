@@ -1,9 +1,13 @@
 package com.example.pasca.yugiohcart;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
@@ -36,10 +40,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -55,6 +63,7 @@ public class CardDetailsFragment extends Fragment {
 	//private String cardName, cardText, type, cardType,cardFamily, atk, def, level;
 	private TextView titleTV, textTV, typeTV, cardTypeTV, familyTV, atkTV, defTV, levelTV;
 	private  String cardName;
+	private Bitmap image;
 
 	private static final String DATA_URL = "http://yugiohprices.com/api/card_data/";
 	private static final String IMAGE_URL = "https://static-3.studiobebop.net/ygo_data/card_images/";
@@ -100,6 +109,24 @@ public class CardDetailsFragment extends Fragment {
 		cardImage.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
+
+				Intent shareImage = new Intent(Intent.ACTION_SEND);
+				shareImage.setType("image/jpeg");
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+				File file = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+
+				try {
+					file.createNewFile();
+					FileOutputStream outputStream = new FileOutputStream(file);
+					outputStream.write(bytes.toByteArray());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				shareImage.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/temporary_file.jpg"));
+				startActivity(Intent.createChooser(shareImage, "Share Image"));
+
 				return true;
 			}
 		});
@@ -126,8 +153,6 @@ public class CardDetailsFragment extends Fragment {
 						String textToChange = data.getString("text");
 						String text = textToChange.replaceAll("\\s+", " ");
 						text = text.replaceAll("â\\u0097\\u008F", "\n \u2022");
-
-						Log.e("Change text", textToChange);
 
 						SpannableString content = new SpannableString(data.getString("name"));
 						content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
@@ -191,12 +216,15 @@ public class CardDetailsFragment extends Fragment {
 					@Override
 					public void onResponse(Bitmap response) {
 						cardImage.setImageBitmap(response);
+						cardImage.buildDrawingCache();
+						image = cardImage.getDrawingCache();
 					}
 				}, 0, 0, null,
 				new Response.ErrorListener() {
 					@Override
 					public void onErrorResponse(VolleyError error) {
 						cardImage.setImageResource(R.drawable.image_load_error);
+						image = ((BitmapDrawable) cardImage.getDrawable()).getBitmap();
 					}
 				}
 		);

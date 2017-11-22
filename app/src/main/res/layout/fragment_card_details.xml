@@ -48,26 +48,34 @@
         android:textSize="15sp"
         android:layout_below="@id/type_TV"/>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/attack_TV"
-        android:textSize="15sp"
-        android:layout_below="@id/family_TV"/>
+        android:id="@+id/att_def"
+        android:layout_below="@id/family_TV">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/defence_TV"
-        android:textSize="15sp"
-        android:layout_below="@id/attack_TV"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:id="@+id/attack_TV"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:id="@+id/defence_TV"
+            android:textSize="15sp"/>
+
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/level_TV"
         android:textSize="15sp"
-        android:layout_below="@id/defence_TV"/>
+        android:layout_below="@id/att_def"/>
 
     <Button
         android:id="@+id/button"

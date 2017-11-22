@@ -1,12 +1,16 @@
 package com.example.pasca.yugiohcart;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -49,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}
+		}
 
 		progressBar = (ProgressBar) findViewById(R.id.pb);
 		searchBT = (Button) findViewById(R.id.search_card_button);
@@ -270,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
 		protected void onPostExecute(Void v){
 			progressBar.setVisibility(View.GONE);
+			progressBar.setProgress(0);
 			progressTV.setVisibility(View.GONE);
 			cardDownloadedTV.setVisibility(View.GONE);
 			searchBT.setVisibility(View.VISIBLE);
