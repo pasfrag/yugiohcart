@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -18,21 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -44,13 +39,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Map;
 
 
 /**
@@ -61,7 +49,7 @@ public class CardDetailsFragment extends Fragment {
 
 	private ImageView cardImage;
 	//private String cardName, cardText, type, cardType,cardFamily, atk, def, level;
-	private TextView titleTV, textTV, typeTV, cardTypeTV, familyTV, atkTV, defTV, levelTV;
+	private TextView titleTV, textTV, typeTV, cardTypeTV, attributeTV, statsTV, levelTV;
 	private  String cardName;
 	private Bitmap image;
 
@@ -100,9 +88,8 @@ public class CardDetailsFragment extends Fragment {
 		textTV = (TextView) rootView.findViewById(R.id.card_text_TV);
 		typeTV = (TextView) rootView.findViewById(R.id.type_TV);
 		cardTypeTV = (TextView) rootView.findViewById(R.id.card_type_TV);
-		familyTV = (TextView) rootView.findViewById(R.id.family_TV);
-		atkTV = (TextView) rootView.findViewById(R.id.attack_TV);
-		defTV = (TextView) rootView.findViewById(R.id.defence_TV);
+		attributeTV = (TextView) rootView.findViewById(R.id.attribute_TV);
+		statsTV = (TextView) rootView.findViewById(R.id.stats_TV);
 		levelTV = (TextView) rootView.findViewById(R.id.level_TV);
 		cardImage = (ImageView) rootView.findViewById(R.id.card_image);
 
@@ -140,6 +127,8 @@ public class CardDetailsFragment extends Fragment {
 
 		String cardNameNew = cardName.replace(" ","_");
 		cardNameNew = cardNameNew.replace("-","_");
+		cardNameNew = cardNameNew.replace("\"","_");
+		cardName = cardName.replace(" ", "%20");
 
 		Response.Listener listener = new Response.Listener<String>(){
 
@@ -160,16 +149,22 @@ public class CardDetailsFragment extends Fragment {
 						textTV.setText(text);
 						cardTypeTV.setText(data.getString("card_type"));
 						if (data.getString("card_type").equals("monster")) {
-							typeTV.setText(data.getString("type"));
-							familyTV.setText(data.getString("family"));
-							atkTV.setText(data.getString("atk"));
-							defTV.setText(data.getString("def"));
-							levelTV.setText(data.getString("level"));
+							String type = "Monster type: " + data.getString("type");
+							typeTV.setText(type);
+							String attribute = data.getString("family");
+							attribute = "Attribute: " + attribute.substring(0,1).toUpperCase() + attribute.substring(1);
+							attributeTV.setText(attribute);
+							statsTV.setText("ATK/DEF: " + data.getString("atk") + "/" + data.getString("def"));
+							String level = "Level: ";
+							if (type.toLowerCase().contains("xyz")){
+								level = "Rank: ";
+							}
+							level = level + data.getString("level");
+							levelTV.setText(level);
 						}else{
 							typeTV.setVisibility(View.GONE);
-							familyTV.setVisibility(View.GONE);
-							atkTV.setVisibility(View.GONE);
-							defTV.setVisibility(View.GONE);
+							attributeTV.setVisibility(View.GONE);
+							statsTV.setVisibility(View.GONE);
 							levelTV.setVisibility(View.GONE);
 						}
 
@@ -190,9 +185,8 @@ public class CardDetailsFragment extends Fragment {
 				textTV.setText("There is no internet connection. You can \'t see any data.");
 				cardTypeTV.setVisibility(View.GONE);
 				typeTV.setVisibility(View.GONE);
-				familyTV.setVisibility(View.GONE);
-				atkTV.setVisibility(View.GONE);
-				defTV.setVisibility(View.GONE);
+				attributeTV.setVisibility(View.GONE);
+				statsTV.setVisibility(View.GONE);
 				levelTV.setVisibility(View.GONE);
 
 				if (error instanceof NetworkError) {

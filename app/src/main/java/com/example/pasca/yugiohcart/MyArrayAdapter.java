@@ -64,10 +64,25 @@ public class MyArrayAdapter<T> extends ArrayAdapter {
 		protected FilterResults performFiltering(CharSequence constraint) {
 			if (constraint != null){
 				suggestions.clear();
+				String[] constraintArray;
+				constraintArray = constraint.toString().split(" ");
+				Boolean flag = true;
 				for (String name : tempItems){
-					if (name.toLowerCase().contains(constraint.toString().toLowerCase())){
-						suggestions.add(name);
+					String addedName = name;
+					for (String con : constraintArray) {
+						/*if (name.toLowerCase().contains(constraint.toString().toLowerCase())) {
+							suggestions.add(name);
+						}*/
+						if (name.toLowerCase().contains(con.toLowerCase())){
+							name = name.toLowerCase().replace(con.toLowerCase(), "");
+						}else {
+							flag = false;
+						}
 					}
+					if (flag){
+						suggestions.add(addedName);
+					}
+					flag = true;
 				}
 				FilterResults filterResults = new FilterResults();
 				filterResults.values = suggestions;

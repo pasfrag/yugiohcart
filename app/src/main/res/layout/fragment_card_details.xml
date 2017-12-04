@@ -18,71 +18,63 @@
         android:id="@+id/title_TV"
         android:textSize="20sp"
         android:layout_below="@+id/card_image"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textIsSelectable="true"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/card_text_TV"
+        android:id="@+id/attribute_TV"
         android:textSize="15sp"
-        android:layout_below="@id/title_TV"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/card_type_TV"
-        android:textSize="15sp"
-        android:layout_below="@id/card_text_TV"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/type_TV"
-        android:textSize="15sp"
-        android:layout_below="@id/card_type_TV"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/family_TV"
-        android:textSize="15sp"
-        android:layout_below="@id/type_TV"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/att_def"
-        android:layout_below="@id/family_TV">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:id="@+id/attack_TV"
-            android:textSize="15sp"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:id="@+id/defence_TV"
-            android:textSize="15sp"/>
-
-    </LinearLayout>
+        android:layout_below="@id/title_TV"
+        android:textIsSelectable="true"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/level_TV"
         android:textSize="15sp"
-        android:layout_below="@id/att_def"/>
+        android:layout_below="@id/attribute_TV"
+        android:textIsSelectable="true"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/type_TV"
+        android:textSize="15sp"
+        android:layout_below="@id/level_TV"
+        android:textIsSelectable="true"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_text_TV"
+        android:textSize="15sp"
+        android:layout_below="@id/type_TV"
+        android:textIsSelectable="true"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_type_TV"
+        android:textSize="15sp"
+        android:layout_below="@id/card_text_TV"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/stats_TV"
+        android:textSize="15sp"
+        android:textIsSelectable="true"
+        android:layout_below="@id/card_text_TV"/>
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add to cart"
-        android:layout_below="@+id/level_TV"
+        android:layout_below="@+id/stats_TV"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
         android:onClick="addToCart"
