@@ -57,16 +57,24 @@ public class MainActivity extends AppCompatActivity {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}else {
+				mainFunction();
 			}
+		}else {
+			mainFunction();
 		}
 
-		progressBar = (ProgressBar) findViewById(R.id.pb);
-		searchBT = (Button) findViewById(R.id.search_card_button);
-		cartBT = (Button) findViewById(R.id.my_cart_button);
-		retryBT = (Button) findViewById(R.id.retry_main_btn);
-		progressTV = (TextView) findViewById(R.id.progress_percentage);
-		cardDownloadedTV = (TextView) findViewById(R.id.progress_card);
-		collectionBT = (Button) findViewById(R.id.my_collection_button);
+    }
+
+    public void mainFunction(){
+
+		progressBar = findViewById(R.id.pb);
+		searchBT = findViewById(R.id.search_card_button);
+		cartBT = findViewById(R.id.my_cart_button);
+		retryBT = findViewById(R.id.retry_main_btn);
+		progressTV = findViewById(R.id.progress_percentage);
+		cardDownloadedTV = findViewById(R.id.progress_card);
+		collectionBT = findViewById(R.id.my_collection_button);
 
 		handler = new MySQLiteHandler(this);
 
@@ -89,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
 			collectionBT.setVisibility(View.VISIBLE);
 			retryBT.setVisibility(View.GONE);
 		}
-    }
+
+	}
 
     public boolean onCreateOptionsMenu(Menu menu){
 
@@ -347,6 +356,24 @@ public class MainActivity extends AppCompatActivity {
 
 		queue.add(request);
 
+	}
+
+	public void onRequestPermissionsResult(int requestCode, String[] permissions,
+										   int[] grantResults){
+		switch (requestCode){
+			case 1:
+				if (grantResults.length > 0 && grantResults[0] ==PackageManager.PERMISSION_GRANTED){
+					mainFunction();
+				}else {
+					if (Build.VERSION.SDK_INT >= 16){
+						this.finishAffinity();
+					}
+					else {
+						this.finish();
+					}
+				}
+				break;
+		}
 	}
 
 }

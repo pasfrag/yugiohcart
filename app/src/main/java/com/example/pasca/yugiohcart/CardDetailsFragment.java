@@ -84,14 +84,14 @@ public class CardDetailsFragment extends Fragment {
 
 		//Initialization of UI variables
 		//cardImage = ;
-		titleTV = (TextView) rootView.findViewById(R.id.title_TV);
-		textTV = (TextView) rootView.findViewById(R.id.card_text_TV);
-		typeTV = (TextView) rootView.findViewById(R.id.type_TV);
-		cardTypeTV = (TextView) rootView.findViewById(R.id.card_type_TV);
-		attributeTV = (TextView) rootView.findViewById(R.id.attribute_TV);
-		statsTV = (TextView) rootView.findViewById(R.id.stats_TV);
-		levelTV = (TextView) rootView.findViewById(R.id.level_TV);
-		cardImage = (ImageView) rootView.findViewById(R.id.card_image);
+		titleTV = rootView.findViewById(R.id.title_TV);
+		textTV = rootView.findViewById(R.id.card_text_TV);
+		typeTV = rootView.findViewById(R.id.type_TV);
+		cardTypeTV = rootView.findViewById(R.id.card_type_TV);
+		attributeTV = rootView.findViewById(R.id.attribute_TV);
+		statsTV = rootView.findViewById(R.id.stats_TV);
+		levelTV = rootView.findViewById(R.id.level_TV);
+		cardImage = rootView.findViewById(R.id.card_image);
 
 		cardImage.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
@@ -154,7 +154,8 @@ public class CardDetailsFragment extends Fragment {
 							String attribute = data.getString("family");
 							attribute = "Attribute: " + attribute.substring(0,1).toUpperCase() + attribute.substring(1);
 							attributeTV.setText(attribute);
-							statsTV.setText("ATK/DEF: " + data.getString("atk") + "/" + data.getString("def"));
+							String stats = "ATK/DEF: " + data.getString("atk") + "/" + data.getString("def");
+							statsTV.setText(stats);
 							String level = "Level: ";
 							if (type.toLowerCase().contains("xyz")){
 								level = "Rank: ";
