@@ -1,8 +1,10 @@
 package com.example.pasca.yugiohcart;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,10 +52,31 @@ public class MainActivity extends AppCompatActivity {
 	private Button searchBT, cartBT, retryBT, collectionBT;
 	private TextView progressTV, cardDownloadedTV;
 	private String cardNow;
+	private BroadcastReceiver receiver;
+	private IntentFilter filter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+		progressBar = findViewById(R.id.pb);
+		searchBT = findViewById(R.id.search_card_button);
+		cartBT = findViewById(R.id.my_cart_button);
+		retryBT = findViewById(R.id.retry_main_btn);
+		progressTV = findViewById(R.id.progress_percentage);
+		cardDownloadedTV = findViewById(R.id.progress_card);
+		collectionBT = findViewById(R.id.my_collection_button);
+
+		handler = new MySQLiteHandler(this);
+
+		receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				retryPopulatingDB(searchBT);
+			}
+		};
+
+		filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -66,23 +90,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void mainFunction(){
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (handler.getCardCount()==0) {
+			registerReceiver(receiver, filter);
+		}
+	}
 
-		progressBar = findViewById(R.id.pb);
-		searchBT = findViewById(R.id.search_card_button);
-		cartBT = findViewById(R.id.my_cart_button);
-		retryBT = findViewById(R.id.retry_main_btn);
-		progressTV = findViewById(R.id.progress_percentage);
-		cardDownloadedTV = findViewById(R.id.progress_card);
-		collectionBT = findViewById(R.id.my_collection_button);
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-		handler = new MySQLiteHandler(this);
+		try {
+			unregisterReceiver(receiver);
+		} catch (IllegalArgumentException e) {
+			if (e.getMessage().contains("Receiver not registered")) {
+				// Ignore this exception. This is exactly what is desired
+				Log.w("Register reciever","Tried to unregister the reciver when it's not registered");
+			} else {
+				// unexpected, re-throw
+				throw e;
+			}
+		}
+	}
+
+	public void mainFunction(){
+
 
 		if (handler.getCardCount() == 0 && isOnline()){
 			new PopulateDatabaseTask().execute();
 			getCurrency();
 		}else if (handler.getCardCount() == 0 && !isOnline()){
-			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "You must be online to get all card names!!", Toast.LENGTH_LONG).show();
 			progressBar.setVisibility(View.GONE);
 			progressTV.setVisibility(View.GONE);
 			cardDownloadedTV.setVisibility(View.GONE);
@@ -178,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 	public void retryPopulatingDB(View view){
 		if (isOnline()){
 
-			handler.deleteAllCards();
+			//handler.deleteAllCards();
 			cartBT.setVisibility(View.GONE);
 			collectionBT.setVisibility(View.GONE);
 			searchBT.setVisibility(View.GONE);
@@ -231,6 +271,22 @@ public class MainActivity extends AppCompatActivity {
 				final JSONArray cardsJSON = JSONResponse.getJSONArray("items");
 
 				cardNames = new ArrayList<>(cardsJSON.length());
+
+				if (cardsJSON.length() > handler.getCardCount()){
+					handler.deleteAllCards();
+				}
+				else{
+
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(getApplicationContext(),"No new cards to download!", Toast.LENGTH_LONG).show();
+
+
+						}
+					});
+					return null;
+				}
 
 				for (int i = 0; i < cardsJSON.length(); i++){
 
@@ -295,6 +351,18 @@ public class MainActivity extends AppCompatActivity {
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
 			collectionBT.setVisibility(View.VISIBLE);
+
+			try {
+				unregisterReceiver(receiver);
+			} catch (IllegalArgumentException e) {
+				if (e.getMessage().contains("Receiver not registered")) {
+					// Ignore this exception. This is exactly what is desired
+					Log.w("Register reciever","Tried to unregister the reciver when it's not registered");
+				} else {
+					// unexpected, re-throw
+					throw e;
+				}
+			}
 		}
 
 		@Override

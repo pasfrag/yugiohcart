@@ -278,18 +278,9 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 		SQLiteDatabase database = this.getReadableDatabase();
 		Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_CARDS, null);
 
-		int count = 0;
-
-		if(cursor.moveToFirst()){
-
-			do {
-				count += cursor.getInt(0);
-			}while(cursor.moveToNext());
-
-		}
+		int count = cursor.getCount();
 
 		cursor.close();
-		database.close();
 
 		return  count;
 
