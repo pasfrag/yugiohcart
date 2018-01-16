@@ -70,14 +70,24 @@
         android:layout_below="@id/card_text_TV"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/cartBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add to cart"
         android:layout_below="@+id/stats_TV"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
         android:onClick="addToCart"
+        android:layout_marginTop="12dp"
+        android:text="Add to cart"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/collectionBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/stats_TV"
+        android:layout_marginTop="12dp"
+        android:text="Add to collection"
         android:textAllCaps="false"/>
 
 

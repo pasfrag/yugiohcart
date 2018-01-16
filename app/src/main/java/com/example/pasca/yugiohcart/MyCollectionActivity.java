@@ -135,7 +135,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 
 				View popupView = layoutInflater.inflate(R.layout.add_card_layout, null);
 
-				popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, 800);
+				popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, 650);
 				popupWindow.setFocusable(true);
 				popupWindow.update();
 
@@ -152,6 +152,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 				currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
 				List<String> curr = Arrays.asList(getResources().getStringArray(R.array.currency));
 				currencySP.setSelection(curr.indexOf(card.getCurrency()));
+				currencySP.setEnabled(false);
 
 				conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
 				List<String> cond = Arrays.asList(getResources().getStringArray(R.array.conditions));

@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private MySQLiteHandler handler;
 	private ProgressBar progressBar;
-	private Button searchBT, cartBT, retryBT, collectionBT;
-	private TextView progressTV, cardDownloadedTV;
+	private Button searchBT, cartBT, collectionBT;
+	private TextView progressTV, cardDownloadedTV, retryText;
 	private String cardNow;
 	private BroadcastReceiver receiver;
 	private IntentFilter filter;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 		progressBar = findViewById(R.id.pb);
 		searchBT = findViewById(R.id.search_card_button);
 		cartBT = findViewById(R.id.my_cart_button);
-		retryBT = findViewById(R.id.retry_main_btn);
+		retryText = findViewById(R.id.retry_text);
 		progressTV = findViewById(R.id.progress_percentage);
 		cardDownloadedTV = findViewById(R.id.progress_card);
 		collectionBT = findViewById(R.id.my_collection_button);
@@ -72,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
 		receiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				retryPopulatingDB(searchBT);
+				retryPopulatingDB();
+				getCurrency();
 			}
 		};
 
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (handler.getCardCount()==0) {
+		if (handler.getCardCount()==0 && !isOnline()) {
 			registerReceiver(receiver, filter);
 		}
 	}
@@ -122,11 +124,10 @@ public class MainActivity extends AppCompatActivity {
 			new PopulateDatabaseTask().execute();
 			getCurrency();
 		}else if (handler.getCardCount() == 0 && !isOnline()){
-			Toast.makeText(this, "You must be online to get all card names!!", Toast.LENGTH_LONG).show();
 			progressBar.setVisibility(View.GONE);
 			progressTV.setVisibility(View.GONE);
 			cardDownloadedTV.setVisibility(View.GONE);
-			retryBT.setVisibility(View.VISIBLE);
+			retryText.setVisibility(View.VISIBLE);
 
 		}else if (handler.getCardCount() != 0){
 			progressTV.setVisibility(View.GONE);
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 			searchBT.setVisibility(View.VISIBLE);
 			cartBT.setVisibility(View.VISIBLE);
 			collectionBT.setVisibility(View.VISIBLE);
-			retryBT.setVisibility(View.GONE);
+			retryText.setVisibility(View.GONE);
 		}
 
 	}
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
 		if (id == R.id.action_download){
 
-			retryPopulatingDB(null);
+			retryPopulatingDB();
 
 		}else if (id == R.id.action_settings){
 
@@ -215,25 +216,19 @@ public class MainActivity extends AppCompatActivity {
 		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
-	public void retryPopulatingDB(View view){
+	public void retryPopulatingDB(){
 		if (isOnline()){
-
-			//handler.deleteAllCards();
 			cartBT.setVisibility(View.GONE);
 			collectionBT.setVisibility(View.GONE);
 			searchBT.setVisibility(View.GONE);
-			retryBT.setVisibility(View.GONE);
+			retryText.setVisibility(View.GONE);
 			progressBar.setVisibility(View.VISIBLE);
 			progressTV.setVisibility(View.VISIBLE);
 			cardDownloadedTV.setVisibility(View.VISIBLE);
 			new PopulateDatabaseTask().execute();
 
-			if (view!=null){
-				getCurrency();
-			}
-
 		}else{
-			Toast.makeText(this, "You must be online to get all card names", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "You must be online to get all card names.", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -426,8 +421,8 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
-	public void onRequestPermissionsResult(int requestCode, String[] permissions,
-										   int[] grantResults){
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+										   @NonNull int[] grantResults){
 		switch (requestCode){
 			case 1:
 				if (grantResults.length > 0 && grantResults[0] ==PackageManager.PERMISSION_GRANTED){

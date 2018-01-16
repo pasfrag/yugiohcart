@@ -100,7 +100,7 @@ public class SearchCardActivity extends AppCompatActivity {
 
 		View popupView = layoutInflater.inflate(R.layout.add_card_layout, null);
 
-		popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, 800);
+		popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, 650);
 		popupWindow.setFocusable(true);
 		popupWindow.update();
 
@@ -113,8 +113,6 @@ public class SearchCardActivity extends AppCompatActivity {
 		raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
 		cartBT = (Button) popupView.findViewById(R.id.add_btn);
 		collectionBT = (Button) popupView.findViewById(R.id.collection_add_btn);
-
-		//popupWindow.setAnimationStyle();
 
 		popupWindow.showAtLocation(relativeLayout, Gravity.CENTER, 0, 0);
 
