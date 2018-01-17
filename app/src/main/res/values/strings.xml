@@ -60,4 +60,32 @@
 
     <string name="action_currency">Latest Currency</string>
 
+    <string name="collection_button_title">Add to collection</string>
+
+    <string name="cart_button_title">Add to cart</string>
+
+    <string name="quantity_tv_text">Quantity:</string>
+
+    <string name="quantity_et_text">1</string>
+
+    <string name="price_tv_text">Price:</string>
+
+    <string name="price_et_text">1.00</string>
+
+    <string name="currency_tv_text">Currency:</string>
+
+    <string name="condition_tv_text">Condition:</string>
+
+    <string name="rarity_tv_text">Rarity:</string>
+
+    <string name="add_btn_text">Add</string>
+
+    <string name="dismiss_btn_text">Dismiss</string>
+
+    <string name="retry_tv_text">There is no internet connection. Please activate wifi or mobile data to download the essential data.</string>
+
+    <string name="autocomplete_et_hint">Card name...</string>
+
+    <string name="action_share">Share</string>
+
 </resources>

@@ -78,7 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:text="There is no internet connection. Please activate wifi or mobile data to download the essential data."
+        android:text="@string/retry_tv_text"
         android:visibility="gone"/>
 
 </LinearLayout>

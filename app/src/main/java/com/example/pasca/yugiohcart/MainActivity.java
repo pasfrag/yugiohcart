@@ -47,6 +47,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+	/*The starting activity of the application
+	* Downloads all the card names and the currency info*/
 
 	private MySQLiteHandler handler;
 	private ProgressBar progressBar;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
 		handler = new MySQLiteHandler(this);
 
+		//Receiver that checks connectivity changes
 		receiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 		filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
 
+		//Permissions request
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -117,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	//Checks the connectivity and the existence of the needed data
 	public void mainFunction(){
-
 
 		if (handler.getCardCount() == 0 && isOnline()){
 			new PopulateDatabaseTask().execute();
@@ -185,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+	//This method creates the activity that shows the saved cart
     public void onClickMyCartButton(View view){
 
         Context context = this;
@@ -197,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+	//This method creates the activity that shows saved collection
     public void onClickMyCollectionButton(View view){
 
 		Context context = this;
@@ -216,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
 		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
+	//Populates the card names database
 	public void retryPopulatingDB(){
 		if (isOnline()){
 			cartBT.setVisibility(View.GONE);
@@ -232,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	//Inner class that downloads the card names and save them to the database.
 	private class PopulateDatabaseTask extends AsyncTask<Void,Integer,Void>{
 
 		@Override
@@ -372,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	//Downloads latest currency
 	public void getCurrency(){
 
 		String url = "http://www.apilayer.net/api/live?access_key=5ef2d99463c96f522c3830ba0af61443&format=1";
@@ -421,6 +430,7 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
+	//Responses to permissions acceptance or denial.
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
 										   @NonNull int[] grantResults){
 		switch (requestCode){

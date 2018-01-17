@@ -8,13 +8,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -46,13 +51,14 @@ public class CardDetailsFragment extends Fragment {
 
 	private ImageView cardImage;
 	private TextView titleTV, textTV, typeTV, cardTypeTV, attributeTV, statsTV, levelTV;
-	private  String cardName;
+	private String cardName, realCardName;
 	private Bitmap image;
 
 	private static final String DATA_URL = "http://yugiohprices.com/api/card_data/";
 	private static final String IMAGE_URL = "https://static-3.studiobebop.net/ygo_data/card_images/";
 
 	public CardDetailsFragment() {
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -61,7 +67,7 @@ public class CardDetailsFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View rootView = inflater.inflate(R.layout.fragment_card_details, container, false);
 		Bundle args = getArguments();
-		cardName = args.getString("cardName", null);
+		realCardName = cardName = args.getString("cardName", null);
 
 		//Initialization of UI variables
 		titleTV = rootView.findViewById(R.id.title_TV);
@@ -104,6 +110,37 @@ public class CardDetailsFragment extends Fragment {
 		return rootView;
 	}
 
+	public Intent shareImageIntent(){
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+		shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(Intent.EXTRA_TEXT, "I just saw \"" + realCardName + "\" #YuGiOhCart");
+		//Log.e(LOG_TAG, "share intent created");
+		//Log.e(LOG_TAG, "string extra = "+shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+
+		return shareIntent;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.carddetailfragment, menu);
+
+		MenuItem menuItem = menu.findItem(R.id.action_share);
+
+		ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+		if (shareActionProvider != null){
+			shareActionProvider.setShareIntent(shareImageIntent());
+		}
+		else{
+			Log.e("Intent error", "Share action provider is null?");
+		}
+
+
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
 	/*Sets the cards data and image in the fragment*/
 	private void populateData(){
 
@@ -128,6 +165,7 @@ public class CardDetailsFragment extends Fragment {
 						SpannableString content = new SpannableString(data.getString("name"));
 						content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 						titleTV.setText(content);
+						text = "Text/Effect: " + text;
 						textTV.setText(text);
 						cardTypeTV.setText(data.getString("card_type"));
 						if (data.getString("card_type").equals("monster")) {

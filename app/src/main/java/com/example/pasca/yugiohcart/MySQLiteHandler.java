@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MySQLiteHandler extends SQLiteOpenHelper {
+	/*This class is used for all the database operations*/
 
 	private Context context;
 
@@ -31,7 +32,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	private static final String COLUMN_CARD_PRICE = "price";
 	private static final String COLUMN_CARD_CURRENCY = "currency";
 
-
+	//Table cart constructor
 	private String CREATE_CART_TABLE = "CREATE TABLE " + TABLE_CART + " (" + COLUMN_ID +
 			" INTEGER PRIMARY KEY, " + COLUMN_CARD_TITLE + " TEXT, " + COLUMN_CARD_QUANTITY +
 			" INTEGER, " + COLUMN_CARD_TYPE + " TEXT, " + COLUMN_CARD_CONDITION +
@@ -41,26 +42,27 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 	//Cards Table Name
 	static final String TABLE_CARDS = "cards";
 
+	//Cards Table Columns
 	static final String COLUMN_TITLE = "title";
 
+	//Table cards constructor
 	private String CREATE_CARDS = "CREATE TABLE " + TABLE_CARDS + " (" + COLUMN_CARD_TITLE +
 			" TEXT)";
 
+	//Table collection columns
 	public final String TABLE_COLLECTION = "collection";
 
+	//Table collection constructor
 	private String CREATE_COLLECTION_TABLE = "CREATE TABLE " + TABLE_COLLECTION + " (" + COLUMN_ID +
 			" INTEGER PRIMARY KEY, " + COLUMN_CARD_TITLE + " TEXT, " + COLUMN_CARD_QUANTITY +
 			" INTEGER, " + COLUMN_CARD_TYPE + " TEXT, " + COLUMN_CARD_CONDITION +
 			" TEXT, "  + COLUMN_CARD_RARITY + " TEXT, "  + COLUMN_CARD_PRICE + " REAL, "  +
 			COLUMN_CARD_CURRENCY + " TEXT" +")";
 
-
+	//Class constructor
 	public MySQLiteHandler(Context context) {
-
-
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		this.context = context;
-
 	}
 
 	@Override
@@ -83,6 +85,7 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 	}
 
+	//Methods for cart and collection tables
 	public void addACard(Card card , String tableName){
 
 		SQLiteDatabase database = this.getWritableDatabase();
@@ -235,6 +238,8 @@ public class MySQLiteHandler extends SQLiteOpenHelper {
 
 	}
 
+	//............................................................................................//
+	//Methods for card table
 	public void addCardName(String card){
 
 		SQLiteDatabase database = this.getWritableDatabase();

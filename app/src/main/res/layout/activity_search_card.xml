@@ -21,7 +21,7 @@
             android:id="@+id/search_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Card name..."
+            android:hint="@string/autocomplete_et_hint"
             android:completionThreshold="1"
             android:dropDownWidth="300sp"
             android:dropDownHorizontalOffset="@dimen/activity_horizontal_margin"

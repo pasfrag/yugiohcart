@@ -19,8 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
             android:textSize="20sp"
-            android:textColor="#ccc"
-            android:text="Number of cards: 20"/>
+            android:textColor="#ccc"/>
 
         <TextView
             android:id="@+id/cards_price"
@@ -28,8 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
             android:textSize="20sp"
-            android:textColor="#ccc"
-            android:text="Total price: 57.43"/>
+            android:textColor="#ccc"/>
 
     </LinearLayout>
 
