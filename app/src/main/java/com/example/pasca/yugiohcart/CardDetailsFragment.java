@@ -41,14 +41,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class CardDetailsFragment extends Fragment {
 
 
 	private ImageView cardImage;
-	//private String cardName, cardText, type, cardType,cardFamily, atk, def, level;
 	private TextView titleTV, textTV, typeTV, cardTypeTV, attributeTV, statsTV, levelTV;
 	private  String cardName;
 	private Bitmap image;
@@ -59,21 +55,6 @@ public class CardDetailsFragment extends Fragment {
 	public CardDetailsFragment() {
 	}
 
-	/*@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		//Initialization of data variables
-		cardName = null;
-		cardText = null;
-		type = null;
-		cardType = null;
-		cardFamily = null;
-		atk = null;
-		def = null;
-		level = null;
-	}*/
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
@@ -83,7 +64,6 @@ public class CardDetailsFragment extends Fragment {
 		cardName = args.getString("cardName", null);
 
 		//Initialization of UI variables
-		//cardImage = ;
 		titleTV = rootView.findViewById(R.id.title_TV);
 		textTV = rootView.findViewById(R.id.card_text_TV);
 		typeTV = rootView.findViewById(R.id.type_TV);
@@ -93,6 +73,7 @@ public class CardDetailsFragment extends Fragment {
 		levelTV = rootView.findViewById(R.id.level_TV);
 		cardImage = rootView.findViewById(R.id.card_image);
 
+		//The implicit intent that shares the image
 		cardImage.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -123,6 +104,7 @@ public class CardDetailsFragment extends Fragment {
 		return rootView;
 	}
 
+	/*Sets the cards data and image in the fragment*/
 	private void populateData(){
 
 		String cardNameNew = cardName.replace(" ","_");
@@ -237,6 +219,7 @@ public class CardDetailsFragment extends Fragment {
 
 	}
 
+	/*A volley requets class for the card data*/
 	private class CardDataRequest extends StringRequest{
 
 		public CardDataRequest( String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {

@@ -12,11 +12,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by pasca on 8/11/2017.
- */
 
 public class MyArrayAdapter<T> extends ArrayAdapter {
+
+	/*The custom string array adapter that let's people search cards more easily*/
 
 	private Context context;
 	private int resource;
@@ -28,10 +27,11 @@ public class MyArrayAdapter<T> extends ArrayAdapter {
 		this.context = context;
 		this.resource = resource;
 		this.items = items;
-		tempItems = new ArrayList<String>(items);
-		suggestions = new ArrayList<String>();
+		tempItems = new ArrayList<>(items);
+		suggestions = new ArrayList<>();
 	}
 
+	@NonNull
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = convertView;
@@ -60,6 +60,7 @@ public class MyArrayAdapter<T> extends ArrayAdapter {
 			return (String) resultValue;
 		}
 
+		//Better filtering letting users search a name more easily
 		@Override
 		protected FilterResults performFiltering(CharSequence constraint) {
 			if (constraint != null){
@@ -70,9 +71,6 @@ public class MyArrayAdapter<T> extends ArrayAdapter {
 				for (String name : tempItems){
 					String addedName = name;
 					for (String con : constraintArray) {
-						/*if (name.toLowerCase().contains(constraint.toString().toLowerCase())) {
-							suggestions.add(name);
-						}*/
 						if (name.toLowerCase().contains(con.toLowerCase())){
 							name = name.toLowerCase().replace(con.toLowerCase(), "");
 						}else {
@@ -100,10 +98,6 @@ public class MyArrayAdapter<T> extends ArrayAdapter {
 			if (results != null && results.count>0){
 				clear();
 				addAll(filterList);
-//				for (String item : filterList){
-//					add(item);
-//					notifyDataSetChanged();
-//				}
 				notifyDataSetChanged();
 			}
 		}

@@ -102,12 +102,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
 		public MyViewHolder(View view){
 			super(view);
 
-			quantityTV = (TextView) view.findViewById(R.id.list_quantity);
-			titleTV = (TextView) view.findViewById(R.id.list_title);
-			rarityTV = (TextView) view.findViewById(R.id.list_rarity);
-			conditionTV = (TextView) view.findViewById(R.id.list_condition);
-			singlePriceTV = (TextView) view.findViewById(R.id.list_price_single);
-			multiplePriceTV = (TextView) view.findViewById(R.id.list_price_multiple);
+			quantityTV = view.findViewById(R.id.list_quantity);
+			titleTV = view.findViewById(R.id.list_title);
+			rarityTV = view.findViewById(R.id.list_rarity);
+			conditionTV = view.findViewById(R.id.list_condition);
+			singlePriceTV = view.findViewById(R.id.list_price_single);
+			multiplePriceTV = view.findViewById(R.id.list_price_multiple);
 		}
 	}
 

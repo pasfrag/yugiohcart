@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class SearchCardActivity extends AppCompatActivity {
+	/*The activity that is responsible for searching new cards*/
 
     private AutoCompleteTextView searchCardET;
     private MyArrayAdapter<String> cardAdapter;
@@ -33,13 +34,13 @@ public class SearchCardActivity extends AppCompatActivity {
 	//PopupViewElements
 	private EditText quantityET, priceET;
 	private Spinner currencySP, conditionSP, raritySP;
-	private Button cartBT, collectionBT;
+	private Button addBT;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_card);
 
-		relativeLayout = (RelativeLayout) findViewById(R.id.activity_search_card);
+		relativeLayout = findViewById(R.id.activity_search_card);
 
 		first = true;
 
@@ -47,12 +48,13 @@ public class SearchCardActivity extends AppCompatActivity {
 
 		cardNameList = handler.getAllCardNames();
 
-        searchCardET = (AutoCompleteTextView) findViewById(R.id.search_card);
+        searchCardET = findViewById(R.id.search_card);
 
 		cardAdapter = new MyArrayAdapter<String>(this, android.R.layout.simple_list_item_1, cardNameList);
 		searchCardET.setAdapter(cardAdapter);
 		cardAdapter.notifyDataSetChanged();
 
+		//Creates a new fragment for each card name that is searched
 		searchCardET.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -94,7 +96,8 @@ public class SearchCardActivity extends AppCompatActivity {
 		toast.show();
 	}
 
-	public void addToCart(View view){
+	//Creates the popup window that saves the card in the database
+	public void addCard(View view){
 		LayoutInflater layoutInflater = (LayoutInflater) getBaseContext()
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -104,15 +107,22 @@ public class SearchCardActivity extends AppCompatActivity {
 		popupWindow.setFocusable(true);
 		popupWindow.update();
 
-		TextView cardTitleTV = (TextView) popupView.findViewById(R.id.card_title_tv);
+		TextView cardTitleTV = popupView.findViewById(R.id.card_title_tv);
 		cardTitleTV.setText(searchCardET.getText().toString());
-		quantityET = (EditText) popupView.findViewById(R.id.quantity_tv);
-		priceET = (EditText) popupView.findViewById(R.id.price_tv);
-		currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
-		conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
-		raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
-		cartBT = (Button) popupView.findViewById(R.id.add_btn);
-		collectionBT = (Button) popupView.findViewById(R.id.collection_add_btn);
+		quantityET = popupView.findViewById(R.id.quantity_tv);
+		priceET = popupView.findViewById(R.id.price_tv);
+		currencySP = popupView.findViewById(R.id.currency_sp);
+		conditionSP = popupView.findViewById(R.id.condition_sp);
+		raritySP = popupView.findViewById(R.id.rarity_sp);
+		addBT = popupView.findViewById(R.id.add_btn);
+		if (view == findViewById(R.id.cartBtn)){
+			addBT.setTag("cart");
+		}else if (view == findViewById(R.id.collectionBtn)){
+			addBT.setTag("collection");
+			priceET.setEnabled(false);
+			currencySP.setEnabled(false);
+			currencySP.setSelection(1);
+		}
 
 		popupWindow.showAtLocation(relativeLayout, Gravity.CENTER, 0, 0);
 
@@ -124,9 +134,10 @@ public class SearchCardActivity extends AppCompatActivity {
 
 	}
 
-	public void addCard(View view){
+	//Saves the card to the database
+	public void add(View view){
 
-		String tableName = handler.TABLE_CART;
+		String tableName = MySQLiteHandler.TABLE_CART;
 		String added = "cart!";
 
 		String title = searchCardET.getText().toString();
@@ -136,17 +147,17 @@ public class SearchCardActivity extends AppCompatActivity {
 		String condition = conditionSP.getSelectedItem().toString();
 		String rarity = raritySP.getSelectedItem().toString();
 
-		TextView typeTV = (TextView) findViewById(R.id.card_type_TV);
+		TextView typeTV = findViewById(R.id.card_type_TV);
 		String type = typeTV.getText().toString();
 
 		if(type.equals("monster")) {
 
-			TextView monsterTypeTV = (TextView) findViewById(R.id.type_TV);
+			TextView monsterTypeTV = findViewById(R.id.type_TV);
 			type = monsterTypeTV.getText().toString();
 
 		}
 
-		if (view == collectionBT){
+		if (view.getTag().equals("collection")){
 			price = 0.0;
 			tableName = handler.TABLE_COLLECTION;
 			added = "collection!";
@@ -154,9 +165,9 @@ public class SearchCardActivity extends AppCompatActivity {
 
 		Card card = new Card(quantity, title, rarity, type, condition, currency, price);
 
-		if (!(rarity.equals("C") || rarity.equals("SR") || rarity.equals("R"))){
+		/*if (!(rarity.equals("C") || rarity.equals("SR") || rarity.equals("R"))){
 			makeAToast("RARITY WHORE!!!");
-		}
+		}*/
 
 		makeAToast("Card added to your " + added);
 		handler.addACard(card, tableName);

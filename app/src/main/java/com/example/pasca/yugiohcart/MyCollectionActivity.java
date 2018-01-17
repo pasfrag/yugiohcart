@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -53,6 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MyCollectionActivity extends AppCompatActivity {
+	/*The activity that is responsible for showing the collection of the user*/
 
 	private MySQLiteHandler handler;
 	private List<Card> myCollection, myHelp;
@@ -74,13 +73,14 @@ public class MyCollectionActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_my_cart);
 
-		priceTV = (TextView) findViewById(R.id.cards_price);
-		quantityTV = (TextView) findViewById(R.id.cards_quantity);
+		priceTV = findViewById(R.id.cards_price);
+		quantityTV = findViewById(R.id.cards_quantity);
 
 		handler = new MySQLiteHandler(getApplicationContext());
 
-		recyclerView = (RecyclerView) findViewById(R.id.cart_RV);
+		recyclerView = findViewById(R.id.cart_RV);
 
+		//Delete on swipe left or right
 		ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 			@Override
 			public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -102,27 +102,13 @@ public class MyCollectionActivity extends AppCompatActivity {
 
 		new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
 
-
-		//myCollection = handler.getAllCards(handler.TABLE_COLLECTION);
-		//myHelp = new ArrayList<>();
-
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean flag = preferences.getBoolean("show_prices", true);
-		/*if (!flag){
-			for (Iterator<Card> iterator = myCollection.iterator();iterator.hasNext();){
-				Card aCard = iterator.next();
-				aCard.setPrice(0.0);
-				myHelp.add(aCard);
-			}
-			myCollection.clear();
-			for (Card aCard : myHelp){
-				myCollection.add(aCard);
-			}
-		}*/
 		initializingArrays();
 
 		setToolbar();
 
+		//Shows each card in a row
 		cartAdapter = new CartAdapter(myCollection, new CustomItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position) {
@@ -139,36 +125,34 @@ public class MyCollectionActivity extends AppCompatActivity {
 				popupWindow.setFocusable(true);
 				popupWindow.update();
 
-				TextView cardTitleTV = (TextView) popupView.findViewById(R.id.card_title_tv);
+				TextView cardTitleTV = popupView.findViewById(R.id.card_title_tv);
 				cardTitleTV.setText(card.getTitle());
 
-				quantityET = (EditText) popupView.findViewById(R.id.quantity_tv);
+				quantityET = popupView.findViewById(R.id.quantity_tv);
 				quantityET.setText(String.valueOf(card.getQuantity()));
 
-				priceET = (EditText) popupView.findViewById(R.id.price_tv);
+				priceET = popupView.findViewById(R.id.price_tv);
 				priceET.setText(String.format("%.2f",card.getPrice()));
 				priceET.setEnabled(false);
 
-				currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
+				currencySP = popupView.findViewById(R.id.currency_sp);
 				List<String> curr = Arrays.asList(getResources().getStringArray(R.array.currency));
 				currencySP.setSelection(curr.indexOf(card.getCurrency()));
 				currencySP.setEnabled(false);
 
-				conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
+				conditionSP = popupView.findViewById(R.id.condition_sp);
 				List<String> cond = Arrays.asList(getResources().getStringArray(R.array.conditions));
 				conditionSP.setSelection(cond.indexOf(card.getCondition()));
 
-				raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
+				raritySP = popupView.findViewById(R.id.rarity_sp);
 				List<String> rar = Arrays.asList(getResources().getStringArray(R.array.rarities));
 				raritySP.setSelection(rar.indexOf(card.getRarity()));
 
 
-				Button updateBtn = (Button) popupView.findViewById(R.id.add_btn);
+				Button updateBtn = popupView.findViewById(R.id.add_btn);
 				updateBtn.setText("Update");
 
-				RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cart_RV);
-
-				popupView.findViewById(R.id.collection_add_btn).setVisibility(View.GONE);
+				RecyclerView recyclerView = findViewById(R.id.cart_RV);
 
 				popupWindow.showAtLocation(recyclerView, Gravity.CENTER, 0, 0);
 
@@ -218,6 +202,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	//Sets the toolbar that shows the total amounts of cards and their price
 	public void setToolbar(){
 
 		double totalPrice = 0.00;
@@ -262,12 +247,12 @@ public class MyCollectionActivity extends AppCompatActivity {
 
 	}
 
-	public void addCard(View view){
+	//Updates the cards data (e.g. quantity) and saves them to the database
+	public void add(View view){
 
 		Card card = myCollection.get(position);
 
 		int quantity = Integer.parseInt(quantityET.getText().toString());
-		//double price = Double.parseDouble(priceET.getText().toString());
 		String rarity = raritySP.getSelectedItem().toString();
 		String currency = currencySP.getSelectedItem().toString();
 		String condition = conditionSP.getSelectedItem().toString();
@@ -276,7 +261,6 @@ public class MyCollectionActivity extends AppCompatActivity {
 
 		card.setRarity(rarity);
 		card.setCurrency(currency);
-		//card.setPrice(price);
 		card.setCondition(condition);
 		card.setQuantity(quantity);
 
@@ -292,6 +276,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 		popupWindow.dismiss();
 	}
 
+	//Rounds the price to the second significant
 	public static double round(double value, int places) {
 		if (places < 0) throw new IllegalArgumentException();
 
@@ -301,6 +286,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 		return (double) tmp / factor;
 	}
 
+	//Checks internet connection
 	public boolean isOnline() {
 		ConnectivityManager cm =
 				(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -308,6 +294,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
+	//Finds the lowest average price for a card.
 	public void setCardPrice(final Card card, final int position){
 
 		Response.Listener<String> listener = new Response.Listener<String>() {
@@ -375,6 +362,7 @@ public class MyCollectionActivity extends AppCompatActivity {
 
 	}
 
+	//Initializing the arrays to use them properly
 	public void initializingArrays(){
 		List<Card> test = handler.getAllCards(handler.TABLE_COLLECTION);
 		myHelp = new ArrayList<>();

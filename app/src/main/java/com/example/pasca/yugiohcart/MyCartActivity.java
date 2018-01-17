@@ -1,5 +1,6 @@
 package com.example.pasca.yugiohcart;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MyCartActivity extends AppCompatActivity {
+	/*The activity that is responsible for showing the users cart*/
 
 	private MySQLiteHandler handler;
 	private List<Card> myCart;
@@ -42,13 +46,14 @@ public class MyCartActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_my_cart);
 
-		priceTV = (TextView) findViewById(R.id.cards_price);
-		quantityTV = (TextView) findViewById(R.id.cards_quantity);
+		priceTV = findViewById(R.id.cards_price);
+		quantityTV = findViewById(R.id.cards_quantity);
 
 		handler = new MySQLiteHandler(getApplicationContext());
 
-		recyclerView = (RecyclerView) findViewById(R.id.cart_RV);
+		recyclerView = findViewById(R.id.cart_RV);
 
+		//Delete on swipe left or right
 		ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 			@Override
 			public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -62,7 +67,7 @@ public class MyCartActivity extends AppCompatActivity {
 				myCart.remove(position);
 				cartAdapter.notifyItemRemoved(position);
 
-				handler.deleteCard(card, handler.TABLE_CART);
+				handler.deleteCard(card, MySQLiteHandler.TABLE_CART);
 				setToolbar();
 				Toast.makeText(getApplicationContext(), "Card deleted", Toast.LENGTH_LONG).show();
 			}
@@ -70,10 +75,11 @@ public class MyCartActivity extends AppCompatActivity {
 
 		new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
 
-		myCart = handler.getAllCards(handler.TABLE_CART);
+		myCart = handler.getAllCards(MySQLiteHandler.TABLE_CART);
 
 		setToolbar();
 
+		//Shows each card in a row
 		cartAdapter = new CartAdapter(myCart, new CustomItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position) {
@@ -90,34 +96,32 @@ public class MyCartActivity extends AppCompatActivity {
 				popupWindow.setFocusable(true);
 				popupWindow.update();
 
-				TextView cardTitleTV = (TextView) popupView.findViewById(R.id.card_title_tv);
+				TextView cardTitleTV = popupView.findViewById(R.id.card_title_tv);
 				cardTitleTV.setText(card.getTitle());
 
-				quantityET = (EditText) popupView.findViewById(R.id.quantity_tv);
+				quantityET = popupView.findViewById(R.id.quantity_tv);
 				quantityET.setText(String.valueOf(card.getQuantity()));
 
-				priceET = (EditText) popupView.findViewById(R.id.price_tv);
+				priceET = popupView.findViewById(R.id.price_tv);
 				priceET.setText(String.format("%.2f",card.getPrice()));
 
-				currencySP = (Spinner) popupView.findViewById(R.id.currency_sp);
+				currencySP = popupView.findViewById(R.id.currency_sp);
 				List<String> curr = Arrays.asList(getResources().getStringArray(R.array.currency));
 				currencySP.setSelection(curr.indexOf(card.getCurrency()));
 
-				conditionSP = (Spinner) popupView.findViewById(R.id.condition_sp);
+				conditionSP = popupView.findViewById(R.id.condition_sp);
 				List<String> cond = Arrays.asList(getResources().getStringArray(R.array.conditions));
 				conditionSP.setSelection(cond.indexOf(card.getCondition()));
 
-				raritySP = (Spinner) popupView.findViewById(R.id.rarity_sp);
+				raritySP = popupView.findViewById(R.id.rarity_sp);
 				List<String> rar = Arrays.asList(getResources().getStringArray(R.array.rarities));
 				raritySP.setSelection(rar.indexOf(card.getRarity()));
 
 
-				Button updateBtn = (Button) popupView.findViewById(R.id.add_btn);
+				Button updateBtn = popupView.findViewById(R.id.add_btn);
 				updateBtn.setText("Update");
 
-				RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cart_RV);
-
-				popupView.findViewById(R.id.collection_add_btn).setVisibility(View.GONE);
+				RecyclerView recyclerView = findViewById(R.id.cart_RV);
 
 				popupWindow.showAtLocation(recyclerView, Gravity.CENTER, 0, 0);
 
@@ -130,9 +134,36 @@ public class MyCartActivity extends AppCompatActivity {
 
 	}
 
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		cartAdapter.notifyDataSetChanged();
+		setToolbar();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.collection, menu);
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item){
+		int id = item.getItemId();
+
+		if (id == R.id.action_settings){
+
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+			return true;
+
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	//Sets the toolbar that shows the total amounts of cards and their price
 	public void setToolbar(){
 
-		double totalPrice = 0.00;
+		double totalPrice;
 		double totalPriceE = 0.00;
 		double totalPriceD = 0.00;
 
@@ -165,12 +196,13 @@ public class MyCartActivity extends AppCompatActivity {
 
 		totalPrice = totalPriceE + totalPriceD;
 
-		quantityTV.setText("Total cards: " + handler.getOrderCount(handler.TABLE_CART));
+		quantityTV.setText("Total cards: " + handler.getOrderCount(MySQLiteHandler.TABLE_CART));
 		priceTV.setText("Price: " + String.format("%.2f",totalPrice) + currSymbol);
 
 	}
 
-	public void addCard(View view){
+	//Updates the cards data (e.g. quantity) and saves them to the database
+	public void add(View view){
 
 		Card card = myCart.get(position);
 
@@ -191,7 +223,7 @@ public class MyCartActivity extends AppCompatActivity {
 		myCart.add(position, card);
 		cartAdapter.notifyItemChanged(position);
 
-		handler.updateCard(card, handler.TABLE_CART);
+		handler.updateCard(card, MySQLiteHandler.TABLE_CART);
 		setToolbar();
 
 		popupWindow.dismiss();
@@ -201,6 +233,7 @@ public class MyCartActivity extends AppCompatActivity {
 		popupWindow.dismiss();
 	}
 
+	//Rounds the price to the second significant
 	public static double round(double value, int places) {
 		if (places < 0) throw new IllegalArgumentException();
 

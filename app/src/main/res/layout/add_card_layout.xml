@@ -133,21 +133,16 @@
             android:id="@+id/add_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="addCard"
-            android:text="Add to Card"/>
-
-        <Button
-            android:id="@+id/collection_add_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="addCard"
-            android:text="Add to Collection"/>
+            android:onClick="add"
+            android:textAllCaps="false"
+            android:text="Add"/>
 
         <Button
             android:id="@+id/dismiss_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="dismissPopup"
+            android:textAllCaps="false"
             android:text="Dismiss"/>
 
     </LinearLayout>

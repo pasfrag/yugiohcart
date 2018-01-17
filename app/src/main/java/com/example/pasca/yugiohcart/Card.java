@@ -1,7 +1,6 @@
 package com.example.pasca.yugiohcart;
 
-import java.lang.ref.SoftReference;
-
+/*The class that helps with the database operations*/
 public class Card {
 
 	private int id, quantity;
@@ -33,6 +32,8 @@ public class Card {
 		this.currency = currency;
 		this.price = price;
 	}
+
+	//Getters and setters
 
 	public int getId() {
 		return id;
